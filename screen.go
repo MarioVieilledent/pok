@@ -17,43 +17,48 @@ func newScreen(char byte) Screen {
 	return screen
 }
 
-func (s *Screen) clear(color byte) {
+func (s *Screen) clear(char byte) {
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
-			s[x][y] = color
+			s[x][y] = char
 		}
 	}
 }
 
-func (s *Screen) drawDot(x, y int, color byte) {
+func inBound(x, y int) bool {
+	if x >= 0 && x < width && y >= 0 && y < height {
+		return true
+	}
 	if x >= width {
 		fmt.Println("Draw dot, x too large")
 		fmt.Println(x)
-		return
 	}
 	if x < 0 {
 		fmt.Println("Draw dot, x below 0")
 		fmt.Println(x)
-		return
 	}
 	if y >= height {
 		fmt.Println("Draw dot, y too large")
 		fmt.Println(y)
-		return
 	}
 	if y < 0 {
 		fmt.Println("Draw dot, y below 0")
 		fmt.Println(y)
-		return
 	}
-	s[x][y] = color
+	return false
 }
 
-func (s *Screen) drawLine(ax, ay, bx, by int, color byte) {
+func (s *Screen) drawDot(x, y int, char byte) {
+	if inBound(x, y) {
+		s[x][y] = char
+	}
+}
+
+func (s *Screen) drawLine(ax, ay, bx, by int, char byte) {
 	dx := bx - ax
 	if dx == 0 {
 		for i := min(ay, by); i <= max(ay, by); i++ {
-			s.drawDot(ax, i, color)
+			s.drawDot(ax, i, char)
 		}
 		return
 	}
@@ -61,7 +66,7 @@ func (s *Screen) drawLine(ax, ay, bx, by int, color byte) {
 	dy := by - ay
 	if dy == 0 {
 		for i := min(ax, bx); i <= max(ax, bx); i++ {
-			s.drawDot(i, ay, color)
+			s.drawDot(i, ay, char)
 		}
 		return
 	}
@@ -79,7 +84,7 @@ func (s *Screen) drawLine(ax, ay, bx, by int, color byte) {
 
 	vx := float64(ax)
 	vy := float64(ay)
-	s.drawDot(int(math.Round(vx)), int(math.Round(vy)), color)
+	s.drawDot(round(vx), round(vy), char)
 
 	var increaseX float64
 	var increaseY float64
@@ -108,12 +113,15 @@ func (s *Screen) drawLine(ax, ay, bx, by int, color byte) {
 		}
 	}
 
-	for i := 0; i <= max(abs(dx), abs(dy)); i++ {
+	for i := 0; i < max(abs(dx), abs(dy)); i++ {
 		vx += increaseX
 		vy += increaseY
-		s.drawDot(int(math.Round(vx)), int(math.Round(vy)), color)
+		s.drawDot(round(vx), round(vy), char)
 	}
+}
 
+func round(v float64) int {
+	return int(math.Round(v))
 }
 
 func abs(n int) int {

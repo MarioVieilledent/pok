@@ -7,8 +7,8 @@ import (
 	"runtime"
 )
 
-func render(screen Screen) {
-	buffer := ""
+func render(screen Screen, color string) {
+	buffer := color
 	for y := 0; y < height; y++ {
 		for x := 0; x < width; x++ {
 			buffer += string(screen[x][y]) + " "
@@ -19,8 +19,8 @@ func render(screen Screen) {
 	fmt.Print(buffer)
 }
 
-func renderWithBorders(screen Screen) {
-	buffer := ""
+func renderWithBorders(screen Screen, color string) {
+	buffer := color
 	for x := 0; x < width+1; x++ {
 		buffer += "--"
 	}
@@ -37,6 +37,10 @@ func renderWithBorders(screen Screen) {
 	}
 	clearScreen()
 	fmt.Print(buffer)
+}
+
+func setTitle(title string) {
+	fmt.Print("\x1b]0;" + title + "\x07")
 }
 
 func clearScreen() {
