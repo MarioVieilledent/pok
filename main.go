@@ -1,7 +1,6 @@
 package main
 
 import (
-	"math"
 	"time"
 )
 
@@ -26,17 +25,24 @@ const magenta string = "\x1b[35m"
 const cyan string = "\x1b[36m"
 const white string = "\x1b[37m"
 
+const speed = 0.05
+
 func main() {
-	setTitle("A game in go named pok")
+	setTitle("pok")
 	screen := newScreen(dot)
 	camera := newCamera()
+	_ = screen
+	_ = camera
+
+	inputChannel := make(chan string)
+	go listenInput(inputChannel)
+	go handleInput(&camera, inputChannel)
+
 	// spinningLine(screen)
-
-	spinningCube(screen, camera)
-
+	spinningCube(screen, &camera)
 }
 
-func spinningCube(screen Screen, camera Camera) {
+func spinningCube(screen Screen, camera *Camera) {
 	camera.move(0.0, 0.0, -5.5)
 
 	a := Point{1.0, 1.0, 1.0}
@@ -65,36 +71,7 @@ func spinningCube(screen Screen, camera Camera) {
 		screen.drawLine(plot(e, camera), plot(g, camera), star)
 
 		render(screen, green)
-		camera.move(0, 0, 0.05)
 
 		time.Sleep(time.Millisecond * 100)
-	}
-}
-
-func spinningLine(screen Screen) {
-	const scale float64 = 18.0
-
-	for theta := 0.0; theta < 1000; theta += 0.1 {
-		screen.clear(dot)
-
-		screen.drawLine(
-			Pixel{21, 21},
-			Pixel{
-				halfWidth + round(math.Cos(theta)*scale),
-				halfHeight + round(math.Sin(theta)*scale),
-			},
-			star,
-		)
-
-		screen.drawPixel(Pixel{halfWidth, halfHeight}, plus)
-		screen.drawPixel(
-			Pixel{
-				halfWidth + round(math.Cos(theta)*scale),
-				halfHeight + round(math.Sin(theta)*scale),
-			},
-			plus,
-		)
-		render(screen, green)
-		time.Sleep(time.Millisecond * 10)
 	}
 }

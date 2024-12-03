@@ -1,6 +1,6 @@
 package main
 
-func plot(point Point, camera Camera) Pixel {
+func plot(point Point, camera *Camera) Pixel {
 	var plotedX, plotedY int
 
 	dx := point[0] - camera.position[0]
